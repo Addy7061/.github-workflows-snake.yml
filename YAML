@@ -5,9 +5,6 @@ on:
   schedule:
     - cron: "0 0 * * *"
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 permissions:
   contents: write
@@ -15,16 +12,19 @@ permissions:
 jobs:
   generate:
     runs-on: ubuntu-latest
+
     steps:
       - name: Generate Snake
         uses: Platane/snk@v3
         with:
           github_user_name: Addy7061
           outputs: |
-            output/github-snake.svg?palette=github-dark
+            dist/github-snake.svg
+            dist/github-snake-dark.svg?palette=github-dark
 
-      - name: Commit Snake
-        uses: stefanzweifel/git-auto-commit-action@v5
+      - name: Publish Snake
+        uses: peaceiris/actions-gh-pages@v4
         with:
-          commit_message: "Update contribution snake"
-          file_pattern: output/*.svg
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: output
